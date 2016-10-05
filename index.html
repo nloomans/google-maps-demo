@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Topo Map</title>
+    <style>
+      .map {
+        width: 600px;
+        height: 600px;
+      }
+      .map, form {
+        float: left;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="map"></div>
+      <input class="add-place" type="text" name="place" placeholder="placename">
+    <script>
+      const styles = [
+        {
+          "elementType": "labels",
+          "stylers": [
+            {
+              "visibility": "off"
+            }
+          ]
+        },
+        {
+          "featureType": "administrative.land_parcel",
+          "stylers": [
+            {
+              "visibility": "off"
+            }
+          ]
+        },
+        {
+          "featureType": "administrative.neighborhood",
+          "stylers": [
+            {
+              "visibility": "off"
+            }
+          ]
+        },
+        {
+          "featureType": "road",
+          "stylers": [
+            {
+              "visibility": "off"
+            }
+          ]
+        }
+      ]
+
+      function initMap() {
+        const map = new google.maps.Map(document.querySelector('.map'), {
+          center: { lat: 52.191735, lng: 3.0369282 },
+          zoom: 7,
+          styles
+        })
+
+        const searchBox = new google.maps.places.SearchBox(document.querySelector('.add-place'))
+
+        const markers = []
+        searchBox.addListener('places_changed', function () {
+          const places = searchBox.getPlaces()
+          if (places.length == 0) return
+
+          places.forEach(function(place) {
+            if (!place.geometry) {
+              console.log("Returned place contains no geometry")
+              return
+            }
+            var icon = {
+              url: place.icon,
+              size: new google.maps.Size(71, 71),
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(17, 34),
+              scaledSize: new google.maps.Size(25, 25)
+            }
+
+            // Create a marker for each place.
+            markers.push(new google.maps.Marker({
+              map: map,
+              title: place.name,
+              position: place.geometry.location
+            }))
+
+            console.log(markers)
+          })
+        })
+
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsF7TRqqdpHul7PJ_kkDXXK22P7ockhfk&libraries=places&callback=initMap" async defer></script>
+
+  </body>
+</html>
